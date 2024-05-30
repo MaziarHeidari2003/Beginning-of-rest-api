@@ -32,7 +32,7 @@ def advocate_list(request):
       )
       serializer = AdvocateSerializer(advocate,many=False)
       return Response(serializer.data)
-
+    
 @api_view(['GET','PUT','DELETE'])
 def advocate_detail(request,username):
   advocate = Advocate.objects.get(username=username)
