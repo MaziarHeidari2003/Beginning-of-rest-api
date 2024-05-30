@@ -3,7 +3,8 @@ from .models import Product
 from .serializers import ProductSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_list_or_404
+
 
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):
@@ -27,16 +28,36 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
 
 
 
-def product_alt_view(request,pk=None,*args,**kwargs):
-  method= request.method
-
-  if method == "GET":
-    if pk is not None:
-      return Response()
-    else:
-      queryset = Product.object.all()
-      data = ProductSerializer(queryset,MANY=True).data
+def product_alt_view(request,pk=None, *args, **kwargs):
+  if request.method == 'GET':
+    if pk in not None:
+      obj = get_list_or_404(Product,pk=pk)
+      data= ProductSerializer(obj,many=False).data
       return Response(data)
-  if method == "POST":
+    queryset = Product.objects.all()
+    data = ProductSerializer(queryset, many=True).data 
+    return Response(data)
+
+  if request.method == 'POST':
+
     serializer = ProductSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
+      title = serializer.validated_data('title')
+      content = serializer.validated_data('content') or None
+      if content is None:
+        content=title
+      serializer.save(content=content)
+
+      print(serializer.data)
+      return Response(serializer.data)
+    return Response({"invalid":"No good data"}, status=400)    
+
+
+
+
+
+
+
+
+
+
