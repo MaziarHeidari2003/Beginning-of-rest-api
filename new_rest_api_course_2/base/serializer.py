@@ -1,13 +1,22 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from .models import Advocate,Company
 
-class AdvocateSerializer(ModelSerializer):
-  class Meta:
-    model=Advocate
-    fields='__all__'
 
 
 class CompanySerializer(ModelSerializer):
+  employee_count = SerializerMethodField(read_only=True) # we are going to count the employees related to each company
   class Meta:
     model = Company
     fields='__all__'
+
+  
+  def get_employee_count(self,obj):
+    count = obj.advocate_set.count() # this is the way to count children
+    return count
+
+class AdvocateSerializer(ModelSerializer):
+  company = CompanySerializer()
+  class Meta:
+    model=Advocate
+    fields= ['username','bio','company']
+
