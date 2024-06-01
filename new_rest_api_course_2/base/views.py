@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 
 
 @api_view(['GET'])
+#@permission_classes([IsAuthenticated])
 def endpoints(request):
   #advocates = Advocate.objects.all()
   #serializer = AdvocateSerializer(advocates)
@@ -17,7 +18,7 @@ def endpoints(request):
   return Response(data)
 
 @api_view(['GET','POST'])
-@permission_classes([IsAuthenticated])
+#@permission_classes([IsAuthenticated])
 def advocate_list(request):
   if request.method == 'GET':
 
